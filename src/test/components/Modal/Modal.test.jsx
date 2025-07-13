@@ -1,11 +1,15 @@
 import { describe, test, expect, vi, afterEach } from 'vitest';
-import { screen, render, fireEvent } from '@testing-library/react';
+import { screen, render, fireEvent, cleanup } from '@testing-library/react';
 
 import Modal from '@/components/Modal';
 
 describe('<Modal />', () => {
   afterEach(() => {
+    // limpiar mocks
     vi.restoreAllMocks();
+
+    // desmontar los componentes que fueron renderizados por render y limpiar el DOM
+    cleanup()
   });
 
   test('Debería mostrar un modal y cerrarse al hacer clic', () => {
@@ -40,4 +44,29 @@ describe('<Modal />', () => {
 
     // console.log(modalContainer.innerHTML); // Puedes descomentar esto para depuración si lo necesitas
   });
+
+
+  test('Debería no mostrar un modal', ()=> {
+    // Arrange
+    const mockOnClose = vi.fn();
+    const isOpen = false;
+
+    // Act
+    render(
+      <Modal onClose={mockOnClose} isOpen={isOpen}>
+        Contenido del modal
+      </Modal>
+    )
+
+    // Assets
+    /*
+      Returns the matching node for a query, and return null if no elements match. This is useful for asserting an element that is not present. Throws an error if more than one match is found (use queryAllBy instead if this is OK)
+    */
+    const modal = screen.queryByTestId('modal')
+
+    expect(modal).toBeNull()
+    expect(modal).not.toBeInTheDocument()
+    expect(mockOnClose).not.toHaveBeenCalled();
+
+  })
 });
